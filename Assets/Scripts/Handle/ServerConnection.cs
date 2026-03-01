@@ -23,4 +23,27 @@ public class ServerConnection : IServerConnection
             }
         }
     }
+
+    public IEnumerator Post(string uri, Dictionary<string, string> formData, Action<string> onSuccess, Action<string> onError)
+    {
+        WWWForm form = new WWWForm();
+        foreach (var item in formData)
+        {
+            form.AddField(item.Key, item.Value);
+        }
+
+        using (UnityWebRequest www = UnityWebRequest.Post(uri, form))
+        {
+            yield return www.SendWebRequest();
+
+            if (www.result == UnityWebRequest.Result.Success)
+            {
+                onSuccess?.Invoke(www.downloadHandler.text);
+            }
+            else
+            {
+                onError?.Invoke($"{www.result}: {www.error}");
+            }
+        }
+    }
 }

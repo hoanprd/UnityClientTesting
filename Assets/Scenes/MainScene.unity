@@ -152,6 +152,11 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   urlDate: http://localhost:8080/GameServer/GetDate.php
+  urlGetUser: http://localhost:8080/GameServer/GetUser.php
+  urlLogin: http://localhost:8080/GameServer/Login.php
+  urlRegistry: http://localhost:8080/GameServer/RegisterUser.php
+  user: duyhoan8
+  pass: 123456
 --- !u!4 &357355249
 Transform:
   m_ObjectHideFlags: 0
