@@ -1,14 +1,16 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using System.Net;
+using TMPro;
 using UnityEngine;
 using UnityEngine.Networking;
+using UnityEngine.UI;
 using static UnityEditor.ShaderData;
 
 public class DataController : MonoBehaviour
 {
     public string urlDate, urlGetUser, urlLogin, urlRegistry;
-    public string user, pass;
+    //public string user, pass;
 
     private IServerConnection _webService;
 
@@ -29,12 +31,6 @@ public class DataController : MonoBehaviour
             (error) => Debug.LogError("Lỗi: " + error)
         ));*/
 
-        var data = new Dictionary<string, string>
-        {
-            { "loginUser", user },
-            { "loginPass", pass }
-        };
-
         /*StartCoroutine(_webService.Post(
             urlLogin,
             data,
@@ -46,15 +42,24 @@ public class DataController : MonoBehaviour
                 Debug.LogError("Đăng nhập thất bại: " + error);
             }
         ));*/
+    }
 
+    public void Login(string username, string password)
+    {
+        var data = new Dictionary<string, string>
+        {
+            { "loginUser", username },
+            { "loginPass", password }
+        };
         StartCoroutine(_webService.Post(
-            urlRegistry,
+            urlLogin,
             data,
             (response) => {
                 Debug.Log("Server phản hồi: " + response);
+                // Xử lý logic đăng nhập thành công ở đây (chuyển scene, lưu token...)
             },
             (error) => {
-                Debug.LogError("Tạo tài khoản thất bại: " + error);
+                Debug.LogError("Đăng nhập thất bại: " + error);
             }
         ));
     }
