@@ -63,4 +63,24 @@ public class DataController : MonoBehaviour
             }
         ));
     }
+
+    public void Registry(string username, string password)
+    {
+        var data = new Dictionary<string, string>
+        {
+            { "loginUser", username },
+            { "loginPass", password }
+        };
+        StartCoroutine(_webService.Post(
+            urlRegistry,
+            data,
+            (response) => {
+                Debug.Log("Server phản hồi: " + response);
+                // Xử lý logic đăng nhập thành công ở đây (chuyển scene, lưu token...)
+            },
+            (error) => {
+                Debug.LogError("Đăng nhập thất bại: " + error);
+            }
+        ));
+    }
 }
