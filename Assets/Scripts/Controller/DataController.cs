@@ -1,4 +1,5 @@
-﻿using System.Collections;
+﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Net;
 using TMPro;
@@ -60,9 +61,11 @@ public class DataController : MonoBehaviour
                     // Xử lý logic đăng nhập thành công ở đây (chuyển scene, lưu token...)
                     Main.Instance.loginRegistryUI.SetActive(false);
                     Main.Instance.userProfile.SetActive(true);
+                    Main.Instance.userInvetory.SetActive(true);
+
                     Main.Instance.userInfo.SetCredentials(username, password);
                     Main.Instance.userInfo.SetID(response);
-                    Main.Instance.dataController.StartCoroutine(Main.Instance.dataController.GetItemIDs(Main.Instance.userInfo.userID));
+                    //Main.Instance.dataController.StartCoroutine(Main.Instance.dataController.GetItemIDs(Main.Instance.userInfo.userID));
                 }
             },
             (error) => {
@@ -91,7 +94,7 @@ public class DataController : MonoBehaviour
         ));
     }
 
-    IEnumerator GetItemIDs(string userID)
+    public IEnumerator GetItemIDs(string userID, System.Action<string> callback)
     {
         WWWForm form = new WWWForm();
         form.AddField("userID", userID);
@@ -102,12 +105,33 @@ public class DataController : MonoBehaviour
             if (www.isNetworkError || www.isHttpError)
             {
                 Debug.Log(www.error);
-                // Xử lý logic đăng nhập thành công ở đây (chuyển scene, lưu token...)
             }
             else
             {
                 Debug.Log(www.downloadHandler.text);
                 string jsonArray = www.downloadHandler.text;
+                callback(jsonArray);
+            }
+        }
+    }
+
+    public IEnumerator GetItem(string ItemID, System.Action<string> callback)
+    {
+        WWWForm form = new WWWForm();
+        form.AddField("itemID", ItemID);
+
+        using (UnityWebRequest www = UnityWebRequest.Post("http://localhost:8080/GameServer/GetItem.php", form))
+        {
+            yield return www.Send();
+            if (www.isNetworkError || www.isHttpError)
+            {
+                Debug.Log(www.error);
+            }
+            else
+            {
+                Debug.Log(www.downloadHandler.text);
+                string jsonArray = www.downloadHandler.text;
+                callback(jsonArray);
             }
         }
     }

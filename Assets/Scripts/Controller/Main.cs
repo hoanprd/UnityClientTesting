@@ -9,7 +9,7 @@ public class Main : MonoBehaviour
     public DataController dataController;
     public UserInfo userInfo;
 
-    public GameObject userProfile, loginRegistryUI;
+    public GameObject userProfile, userInvetory, loginRegistryUI;
 
     // Start is called before the first frame update
     void Start()
