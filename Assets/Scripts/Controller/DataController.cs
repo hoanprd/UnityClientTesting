@@ -135,4 +135,50 @@ public class DataController : MonoBehaviour
             }
         }
     }
+
+    public IEnumerator SellItem(string ID, string itemID, string userID)
+    {
+        WWWForm form = new WWWForm();
+        form.AddField("ID", ID);
+        form.AddField("itemID", itemID);
+        form.AddField("userID", userID);
+
+        using (UnityWebRequest www = UnityWebRequest.Post("http://localhost:8080/GameServer/SellItem.php", form))
+        {
+            yield return www.Send();
+            if (www.isNetworkError || www.isHttpError)
+            {
+                Debug.Log(www.error);
+            }
+            else
+            {
+                Debug.Log(www.downloadHandler.text);
+            }
+        }
+    }
+
+    public IEnumerator GetItemIcon(string itemID, System.Action<Sprite> callback)
+    {
+        WWWForm form = new WWWForm();
+        form.AddField("itemID", itemID);
+
+        using (UnityWebRequest www = UnityWebRequest.Post("http://localhost:8080/GameServer/GetItemIcon.php", form))
+        {
+            yield return www.SendWebRequest();
+            if (www.isNetworkError || www.isHttpError)
+            {
+                Debug.Log(www.error);
+            }
+            else
+            {
+                Byte[] bytes = www.downloadHandler.data;
+
+                Texture2D texture = new Texture2D(2, 2);
+                texture.LoadImage(bytes);
+
+                Sprite sprite = Sprite.Create(texture, new Rect(0, 0, texture.width, texture.height), new Vector2(0.5f, 0.5f));
+                callback(sprite);
+            }
+        }
+    }
 }
