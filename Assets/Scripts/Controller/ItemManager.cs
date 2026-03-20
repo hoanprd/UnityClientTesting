@@ -1,10 +1,11 @@
-﻿using System.Collections;
+﻿using SimpleJSON;
+using System;
+using System.Collections;
 using System.Collections.Generic;
+using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
-using System;
-using SimpleJSON;
-using TMPro;
+using UnityEngine.XR;
 
 public class ItemManager : MonoBehaviour
 {
@@ -63,12 +64,29 @@ public class ItemManager : MonoBehaviour
             itemGO.transform.Find("PriceText (TMP)").GetComponent<TMP_Text>().text = itemInfoJson["price"];
             itemGO.transform.Find("DescriptionText (TMP)").GetComponent<TMP_Text>().text = itemInfoJson["description"];
 
-            Action<Sprite> getItemIconCallback = (downloadedSprite) =>
-            {
-                itemGO.transform.Find("AvatarImage").GetComponent<Image>().sprite = downloadedSprite;
-            };
+            int imgVer = itemInfoJson["imgVer"].AsInt;
 
-            StartCoroutine(Main.Instance.dataController.GetItemIcon(itemId, getItemIconCallback));
+            byte[] bytes = ImageManager.Instance.LoadImage(itemId, imgVer);
+
+            if (bytes.Length == 0)
+            {
+                Action<byte[]> getItemIconCallback = (downloadedBytes) =>
+                {
+                    Sprite sprite = ImageManager.Instance.BytesToSprite(downloadedBytes);
+                    itemGO.transform.Find("AvatarImage").GetComponent<Image>().sprite = sprite;
+                    ImageManager.Instance.SaveImage(itemId, downloadedBytes, imgVer);
+                    ImageManager.Instance.SaveVersionJson();
+                };
+
+                StartCoroutine(Main.Instance.dataController.GetItemIcon(itemId, getItemIconCallback));
+            }
+            else
+            {
+                Sprite sprite = ImageManager.Instance.BytesToSprite(bytes);
+                itemGO.transform.Find("AvatarImage").GetComponent<Image>().sprite = sprite;
+            }
+
+
 
             //Set sell button
             itemGO.transform.Find("SellButton").GetComponent<Button>().onClick.AddListener(() =>

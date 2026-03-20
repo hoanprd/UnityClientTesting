@@ -157,7 +157,7 @@ public class DataController : MonoBehaviour
         }
     }
 
-    public IEnumerator GetItemIcon(string itemID, System.Action<Sprite> callback)
+    public IEnumerator GetItemIcon(string itemID, System.Action<Byte[]> callback)
     {
         WWWForm form = new WWWForm();
         form.AddField("itemID", itemID);
@@ -171,13 +171,9 @@ public class DataController : MonoBehaviour
             }
             else
             {
+                Debug.Log("Downloading item: " + itemID);
                 Byte[] bytes = www.downloadHandler.data;
-
-                Texture2D texture = new Texture2D(2, 2);
-                texture.LoadImage(bytes);
-
-                Sprite sprite = Sprite.Create(texture, new Rect(0, 0, texture.width, texture.height), new Vector2(0.5f, 0.5f));
-                callback(sprite);
+                callback(bytes);
             }
         }
     }
